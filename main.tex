@@ -46,9 +46,6 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash }b{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
 
-\DeclareCaptionType{mycapequ}[][List of equations]
-\captionsetup[mycapequ]{labelformat=empty}
-
 \title{Electronic for measurement systems - Weighing scale}
 \author{Pierre-Louis GIL and Youwan MAHÉ}
 \date{Nov-Dec 2022, Grenoble-INP PHELMA}
@@ -59,11 +56,10 @@
 \tableofcontents
 \newpage
 
-\section{Introduction}
-\paragraph{}
 \section{Sensor}
 \paragraph{}
-The main component behind weighing scales is the \emph{Straining Gauge}. Straining gauges are resistive sensors that is used to measure strain on an object. The resistive part is usually made of metal and glued to an insulating adhesive surface such as cyanoacrylate. Since the variation of resistance is  small, it is very common to use a Wheatstone bridge configuration to transform the variation of resistance in a differential voltage.
+The main component behind weighing scales is the \emph{Straining Gauge}. Straining gauges are resistive sensors that are used to measure strain on an object. The resistive part is usually made of metal and glued to an insulating adhesive surface such as cyanoacrylate. Since the variation of resistance is  small, it is very common to use a Wheatstone bridge configuration to transform the variation of resistance in a differential voltage.
+\subsection{Gauge factor and measurand}
 \paragraph{}
 The Gauge Factor $GF$ is a quantity used to describe the sensitivity of a strain gauge.
 \begin{equation}
@@ -74,7 +70,7 @@ GF=\dfrac{\Delta R/R}{\epsilon}
 \item $\Delta R$ The variation of resistance
 \item $R$ Resistance at rest
 \end{itemize}
-Using the Wheatstone bridge we convert the $\Delta R$ in a differential voltage $V_{sensor}$.
+Using the Wheatstone bridge, we convert the $\Delta R$ in a differential voltage $V_{sensor}$.
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -110,9 +106,11 @@ Our strain gauge is the model DF2S made by HBM (Hottinger Baldwin Messtechnik Gm
 	\label{fig:beforeamp}
 \end{figure}
 
-\section{Amplificator}
+%----------------------------------------------------------------%
+\section{Amplifier}
+\subsection{Theory of operation}
 \paragraph{}
-As seen in figure \ref{fig:beforeamp} he signal that outputs the Wheastone bridge is a weak differential signal (~mV), 
+As seen in figure \ref{fig:beforeamp} he signal that outputs the Wheatstone bridge is a weak differential signal (~mV).
 \paragraph{}
 We need to amplify it in order to get an acceptable signal for the Analog to Digital Converter.
 The amplification is done by using a 3 AOP differential amplifier.
@@ -123,7 +121,10 @@ The amplification is done by using a 3 AOP differential amplifier.
     \label{fig:3OpAmp}
 \end{figure}
 The difference of potential between the two branches is amplified according to this formula.
-%insert formula for 3AOP differential amplifier
+\begin{equation}
+    \dfrac{V_{out}}{V_1-V_2}=(1+\dfrac{2R_1}{R_{gain}})\dfrac{R_3}{R_2}
+\end{equation}
+\subsection{Gain of the amplifier according to documentation}
 In our case, we could only change the value of Rg as the differential amplifier is a component and not a circuit we had to make. The gain of this amplifier is calculated as follow:
 \begin{equation}
     G=5+\dfrac{80000}{R_g}
@@ -154,15 +155,29 @@ We obtain the following results
 %insert figure differential amplifier output after correction
 %ajouter les limites
 
+%----------------------------------------------------------------%
 \section{Analog to Digital Converter}
+\subsection{Theory of operation}
+\paragraph{}
 Now that the signal is amplified, we can convert it into a digital signal via an Analog to Digital Converter (ADC).
 The ADC is a $\Delta$$\Sigma$-ADC which means that the voltage value is converted into a linear amount of pulses during a period P. 
 The higher the voltage the more pulses it outputs.
-%insert schematic here
+\paragraph{}
 As seen in the schematic below, if we consider the signal to be constant, the integrator transforms it into a linear function.
-Once that function reaches a threshold, a pulse is emitted, then each pulse is added on the output signal and by counting the amount of pulse (one pulse is equivalent to one quantum of voltage) it is possible to find the voltage.
-We can have $2^16$ values from 0 to 2.048 V so our quantum is 31.2 mV.
-%I2C here
+Once that function reaches a threshold, a pulse is emitted, then each pulse is added on the output signal and by counting the amount of pulse (one pulse is equivalent to one quantum of voltage) it is possible to find the voltage.\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{figures/CAN.png}
+    \caption{Analogue to digital conversion modelized by a step function}
+    \label{fig:CAN_step}
+\end{figure}
+We can have $2^{16}$ values from 0 to 2.048 V so our quantum is 31.2 $\mu$V.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/i2c_diagram.pdf}
+    \caption{$I^2C$ schematic}
+    \label{fig:i2c_diagram}
+\end{figure}
 The ADC uses the $I^2C$ protocol to convey information to the mother board. 
 The $I^2C$ protocol revolves around two wires that connects one master (the mother board here) and slaves (the ADC). 
 One transfer data while the clock signal is in the other.
@@ -176,6 +191,7 @@ It is thus possible to have more than one slave with only two wires (We wont use
 In order to have these two different voltages, we use two resistor connected to Vcc and the wires.
 Each wire can be connected to the ground so that the voltage can be 0V (bit 0) or not 0V (bit 1), the pull up resistor prevent short-circuiting and fix the bit to 1 when no one send data through the wires.
 %limits here
+%----------------------------------------------------------------%
 \section{Noise reduction}
 \paragraph{}
 A lab is isolated from a lot of external noise. In order to reinforce the noise reduction capability of our weighting scale, we must add some noise sources to see and reduce the effects. We will be focusing on two noise sources : a vibration generator and an electromagnetic noise generator.
@@ -222,16 +238,16 @@ In accordance with the available components, an RC filter ($1^{st}$ order) with 
   \centering
   \includegraphics[width=\linewidth]{figures/nomotorfilter.pdf}
   \caption{FFT of the recovered signal before digitalization\\ without the motor}
-  \label{fig:nomotornofilter}
+  \label{fig:nomotornofilter2}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/motorfilter.pdf}
   \caption{FFT of the recovered signal before digitalisation\\ with the motor at 60 rounds per second}
-  \label{fig:motornofilter}
+  \label{fig:motornofilter2}
 \end{subfigure}
 \caption{With the RC Low-Pass filter}
-\label{fig:nofilterFFT}
+\label{fig:filterFFT}
 \end{figure}
 Figure \ref{fig:filterFFT} shows the absence of AC component noise in our signal. Howerver, with the filter the stabilisation of the value takes more time. We must wait $3\tau$ to get a stable value. On the other hand, the displayed value seemed more stable. The same standard deviation measurement was made and the results showed a reduced variance of both values.
 \begin{center}
@@ -273,6 +289,7 @@ To reduce the sparks effect, a proof-of-concept faraday cage was made using stee
 \end{figure}
 \paragraph{}
 The data proves that a metallic shield provide good insulation against such EM disturbances. We could consider integrating it in the final product.
+%----------------------------------------------------------------%
 \section{Error Budget}
 \paragraph{}
 The prototype is now fully completed. The layout of the PCB is drawn on figure \ref{fig:layout}
@@ -289,10 +306,39 @@ The thermal noise or Johnson–Nyquist noise affects only resistive components. 
 \begin{itemize}
     \item $\Delta f$ Bandwidth in Hertz
     \item $R$ Resistance in Ohm
-    \item $k_b$ Boltzman's Constant : $1.380649x10^{-23} J.K^{-1}$ 
+    \item $k_b$ Boltzman's Constant : $1.380649.10^{-23} J.K^{-1}$ 
     \item $T$ Temperature in Kelvin
 \end{itemize}
+
+%INSERT BuDGET ERROR HERE
+The differential amplifier can be modelled this way to take into account the different imperfections of the amplifier.
+The values can be found in the amplifier's datasheet.
+Each component of the error can be calculated separately then the squared values can be summed up to obtain the total error budget of the system.
+%insert schematic
+\begin{itemize}
+    \item $V_{INoise+}$ = 0.21 nV
+    \item $V_{INoise-}$ = 0.21 nV
+    \item $V_{Bias+}$ = 14 $\mu$V
+    \item $V_{Bias-}$ = 14 $\mu$V
+    \item $V_{Noise}$ = 0.35 $\mu$V
+    \item $V_{OFS}$ = 164 $\mu$V
+    \item $V_{IOFS}$ = 1.25 $\mu$V
+\end{itemize}
+The total error budget
+We can also describe the error in terms of affected quantum. In our case, the 16 bit resolution of the conversion devices allows us to neglect the quantification error with respect to the electrical noise. We can therefore calculate the amount of noise in quantum units, and we will determine the Signal to noise ratio between number of affected quantum and $2^{16}$ bits.
+%----------------------------------------------------------------%
+\section{Conclusion}
+\subsection{Final calibration of the weighting scale}
+\paragraph{}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/calibr.pdf}
+    \caption{Final calibration of or measurement system}
+    \label{fig:final_calibration}
+\end{figure}
+
 \newpage
+%----------------------------------------------------------------%
 \section{Bibliography}
 \bibliography{biblio}
 \bibliographystyle{alpha}
