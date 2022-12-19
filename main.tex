@@ -165,12 +165,15 @@ The higher the voltage the more pulses it outputs.
 \paragraph{}
 As seen in the schematic below, if we consider the signal to be constant, the integrator transforms it into a linear function.
 Once that function reaches a threshold, a pulse is emitted, then each pulse is added on the output signal and by counting the amount of pulse (one pulse is equivalent to one quantum of voltage) it is possible to find the voltage.\\
+\paragraph{}
+The shape of the digitalized signal is described by a step function. Due to the shape, an error is induced by the difference between the value and the closest digital value of the conversion device. The noise is called quantification noise and is equal to 1 quantum in the worst case scenario.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{figures/CAN.png}
+    \includegraphics[width=.6\textwidth]{figures/echantilloneur.png}
     \caption{Analogue to digital conversion modelized by a step function}
-    \label{fig:CAN_step}
+    \label{fig:CAN_ech}
 \end{figure}
+
 We can have $2^{16}$ values from 0 to 2.048 V so our quantum is 31.2 $\mu$V.
 \begin{figure}[H]
     \centering
@@ -184,13 +187,17 @@ One transfer data while the clock signal is in the other.
 Each slave has an address that the master uses to call it whenever it needs it.
 Each bit of data bus is given by a voltage, if there is 0V it is considered to be 0 and if there is a voltage it is a 1,
 The signal created is now a logical signal that can be translated by the master.
-%insert bus data schematic
 The signal is composed of a start bit then the address of the slave in binary then the slave respond via a bit called ACK.
 The clock signal is used to read the data sent.
 It is thus possible to have more than one slave with only two wires (We wont use this feature here).
 In order to have these two different voltages, we use two resistor connected to Vcc and the wires.
 Each wire can be connected to the ground so that the voltage can be 0V (bit 0) or not 0V (bit 1), the pull up resistor prevent short-circuiting and fix the bit to 1 when no one send data through the wires.
-%limits here
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{figures/CAN.png}
+    \caption{Analogue to digital conversion modelized by a step function}
+    \label{fig:CAN_step}
+\end{figure}
 %----------------------------------------------------------------%
 \section{Noise reduction}
 \paragraph{}
@@ -229,9 +236,9 @@ Figure \ref{fig:nofilterFFT} shows an evident spectral contribution of the vibra
 \end{tabular}
 \end{center}
 \paragraph{}
-Since the usefull part of the signal is only in the DC componenent. A Low-Pass filter should eliminate the disturbance while keeping the information in the signal.
+Since the useful part of the signal is only in the DC component. A Low-Pass filter should eliminate the disturbance while keeping the information in the signal.
 \paragraph{}
-In accordance with the available components, an RC filter ($1^{st}$ order) with a cuttof frequency of $0.8Hz$ is added to the circuit. Same measurements are made with after the filter is soldered on the board. Results are the following : 
+In accordance with the available components, an RC filter ($1^{st}$ order) with a cutoff frequency of $0.8Hz$ is added to the circuit. Same measurements are made with after the filter is soldered on the board. Results are the following : 
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -313,7 +320,6 @@ The thermal noise or Johnson–Nyquist noise affects only resistive components. 
 %INSERT BuDGET ERROR HERE
 The differential amplifier can be modelled this way to take into account the different imperfections of the amplifier.
 The values can be found in the amplifier's datasheet.
-Each component of the error can be calculated separately then the squared values can be summed up to obtain the total error budget of the system.
 %insert schematic
 \begin{itemize}
     \item $V_{INoise+}$ = 0.21 nV
@@ -324,19 +330,38 @@ Each component of the error can be calculated separately then the squared values
     \item $V_{OFS}$ = 164 $\mu$V
     \item $V_{IOFS}$ = 1.25 $\mu$V
 \end{itemize}
-The total error budget
-We can also describe the error in terms of affected quantum. In our case, the 16 bit resolution of the conversion devices allows us to neglect the quantification error with respect to the electrical noise. We can therefore calculate the amount of noise in quantum units, and we will determine the Signal to noise ratio between number of affected quantum and $2^{16}$ bits.
+Each component of the error can be calculated separately, then the squared values can be summed up to obtain the total error budget of the system.
+\begin{equation}
+    Er_{tot}=\sqrt{V_{INoise+}^2 + V_{INoise-}^2 + V_{Bias+}^2 + V_{Bias-}^2 + V_{Noise}^2 + V_{OFS}^2 + V_{IOFS}^2}
+\end{equation}
+The total error budget sum up to 1.65 $\mu$V for a maximum signal amplitude of 7.26 mV.
+\begin{equation}
+    Er_{bud}=100*\dfrac{Er_{tot}}{V_{maxsig}}
+\end{equation}
+\begin{itemize}
+    \item $Er_{bud}$ is the error budget in percentage
+    \item $Er_{tot}$ is the total error in mV
+    \item $V_{maxsig}$ is the maximum value of the useful signal
+\end{itemize}
+We obtain this value:
+\begin{equation}
+    Er_{bud}=2.27\%
+\end{equation}
+The thermal noise generated by the resistors is negligible with respect to the amplifier noise.
+
+We can also describe the error in terms of affected quantum. In our case, the 16 bit resolution of the conversion devices allows us to neglect the quantification error with respect to the electrical noise. We can therefore calculate the amount of noise in quantum units, and we will determine the Signal to noise ratio between the number of affected quantum and $2^{16}$ bits. In our case, the error is affecting 19 digits. We can round up to 20 digits because of the quantification error that is in the worst case 1 quantum.
 %----------------------------------------------------------------%
 \section{Conclusion}
 \subsection{Final calibration of the weighting scale}
 \paragraph{}
+Finally, we can produce a calibration curve for our device. Strain gauges are very sensitive sensors that provide a very good linearity on a wide mesurand span. We obtained a $R^2=1$ which means that all the variation in the y values is accounted for by the x values. 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\textwidth]{figures/calibr.pdf}
     \caption{Final calibration of or measurement system}
     \label{fig:final_calibration}
 \end{figure}
-
+The equation linking the mass to the amplified voltage is : $Voltage = 0.00198.mass+0.02298$, with Voltage in Volts and mass in grams.
 \newpage
 %----------------------------------------------------------------%
 \section{Bibliography}
