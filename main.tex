@@ -59,7 +59,7 @@
 
 \section{Sensor}
 \paragraph{}
-The main component behind weighing scales is the \emph{Straining Gauge}. Straining gauges are resistive sensors that are used to measure strain on an object. The resistive part is usually made of metal and glued to an insulating adhesive surface such as cyanoacrylate. Since the variation of resistance is  small, it is very common to use a Wheatstone bridge configuration to transform the variation of resistance in a differential voltage \cite{LeBerre-2016}.
+The main component behind weighing scales is the \emph{Strain Gauge}. Strain gauges are resistive sensors that are used to measure strain on an object. The resistive part is usually made of metal and glued to an insulating adhesive surface such as cyanoacrylate. Since the variation of resistance is  small, it is very common to use a Wheatstone bridge configuration to transform the variation of resistance in a differential voltage \cite{LeBerre-2016}.
 \subsection{Gauge factor and measurand}
 \paragraph{}
 The Gauge Factor $GF$ is a quantity used to describe the sensitivity of a strain gauge. \cite{bucci}
@@ -71,7 +71,7 @@ GF=\dfrac{\Delta R/R}{\epsilon}
 \item $\Delta R$ The variation of resistance
 \item $R$ Resistance at rest
 \end{itemize}
-Using the Wheatstone bridge, we convert the $\Delta R$ in a differential voltage $V_{sensor}$.
+Using the Wheatstone bridge, we convert the $\Delta R$ to a differential voltage $V_{sensor}$.
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -99,7 +99,7 @@ V_{sensor}=\dfrac{GF \epsilon}{4}E
 \item $V_{sensor}$ the differential voltage
 \end{itemize}
 \paragraph{}
-Our strain gauge is the model DF2S made by HBM (Hottinger Baldwin Messtechnik GmbH). It comes directly with an inbuilt Wheatstone bridge made with 1000$\Omega$ strain gauges. The maximum load we will use for this project is 1kg \cite{HottingerBaldwinMesstechnikGmbH}. We measured the characteristic of our sensor with the help of known masses and a high sensitivity digital multimeter from fluke. The result is shown in \ref{fig:beforeamp}.
+Our strain gauge is the model DF2S made by HBM (Hottinger Baldwin Messtechnik GmbH). It comes directly with an inbuilt Wheatstone bridge made with 1000$\Omega$ strain gauges. The maximum load we will use for this project is 1 kg \cite{HottingerBaldwinMesstechnikGmbH}. We measured the characteristic of our sensor with the help of known masses and a high sensitivity digital multimeter from fluke. The result is shown in \ref{fig:beforeamp}.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{figures/beforeamp.pdf}
@@ -113,12 +113,12 @@ Our strain gauge is the model DF2S made by HBM (Hottinger Baldwin Messtechnik Gm
 \paragraph{}
 As seen in figure \ref{fig:beforeamp} the signal that outputs the Wheatstone bridge is a weak differential signal (mV).
 \paragraph{}
-We need to amplify it in order to get an acceptable signal for the Analog to Digital Converter.
-The amplification is done by using a 3 AOP differential amplifier. The amplifier (MAX4194) is an SMD device which we used according to the schematics presented in \cite{MaximIntegrated-2015}.
+We need to amplify it in order to get an acceptable signal for the Analogue to Digital Converter.
+The amplification is done by using a 3 OPAmp differential amplifier. The amplifier (MAX4194) is an SMD device, which we used according to the schematics presented in \cite{MaximIntegrated-2015}.
 \begin{figure}[H]
     \centering
     \includegraphics[width = .4\textwidth]{figures/3AOP_differential_amplifier.png}
-    \caption{3 Amp op differential amplifier}
+    \caption{3 Amp op differential amplifier diagram}
     \label{fig:3OpAmp}
 \end{figure}
 The difference of potential between the two branches is amplified according to this formula.
@@ -126,7 +126,7 @@ The difference of potential between the two branches is amplified according to t
     \dfrac{V_{out}}{V_1-V_2}=(1+\dfrac{2R_1}{R_{gain}})\dfrac{R_3}{R_2}
 \end{equation}
 \subsection{Gain of the amplifier according to documentation}
-In our case, we could only change the value of Rg as the differential amplifier is a component and not a circuit we had to make. The gain of this amplifier is calculated as follow:
+In our case, we could only change the value of Rg as the differential amplifier is a component and not a circuit we had to make. The gain of this amplifier is calculated as follows:
 \begin{equation}
     G=5+\dfrac{80000}{R_g}
 \end{equation}
@@ -140,10 +140,10 @@ Knowing the maximum value that this amplifier can output as well as the maximum 
     \item $G$ is the gain of the amplifier
     \item $80000$ is a value in $k\Omega$
 \end{itemize}
-The maximum mass we want to be able to measure is 1kg.
-Using the linear regression extrapolated from the Wheatstone bridge (figure \ref{fig:Wheatstone}) we obtain that the differential voltage for 1kg is 7.26 mV.
-As 3.33 V is the maximum output value of our differential, we obtain a maximum gain of 459.
-Using (\ref{equ:rg}) we obtain a resistor of 176 $\Omega$. We do not have such resistor so we chose the closest higher resistor value we have at our disposal to not saturate the amplifier.
+The maximum mass we want to be able to measure is 1 kg.
+Using the linear regression extrapolated from the Wheatstone bridge (figure \ref{fig:Wheatstone}) we obtain that the differential voltage for 1 kg is 7.26 mV.
+As 3.33 V is the maximum output value of our bridge, we obtain a maximum gain of 459.
+Using (\ref{equ:rg}) we obtain a resistor of 176 $\Omega$. We do not have such resistor, so we chose the closest higher resistor value we have at our disposal to not saturate the amplifier.
 The value of Rg is 220 $\Omega$ which correspond to a gain of 369.
 \begin{figure}[H]
     \centering
@@ -151,7 +151,7 @@ The value of Rg is 220 $\Omega$ which correspond to a gain of 369.
     \caption{Amplified calibration of the scale}
     \label{fig:offset_not_compensated}
 \end{figure}
-We can see on figure \ref{fig:offset_not_compensated} that the signal is being correctly amplified, there is no saturation. However, we can observe an offset that can be caused by the strain of the platform on the strain gauge.
+We can see on figure \ref{fig:offset_not_compensated} that the signal is being correctly amplified, there is no saturation. However, we can observe an offset that can be caused by the weight of the platform on the strain gauge.
 In order to correct this offset, we added a resistor in the Wheatstone bridge.
 \begin{figure}[H]
     \centering
@@ -159,18 +159,18 @@ In order to correct this offset, we added a resistor in the Wheatstone bridge.
     \caption{Modified Wheatstone bridge}
     \label{fig:Mod_Weatstone}
 \end{figure}
-This new resistor forms an equivalent resistor with R4 which helps us to readjust the potential in the node B to match the potential in node A so that the offset is negated.
-We want to adjust around 0.002 mV so our resistor should be around 1M$\Omega$.
+This new resistor forms an equivalent resistor with R4, which helps us to readjust the potential in the node B to match the potential in node A so that the offset is negated (re-equilibrating the bridge).
+We want to adjust around 0.002 mV, so our resistor should be around 1M$\Omega$.
 The value 470k$\Omega$ was empirically chosen.
-We obtain the following result presented later in figure \ref{fig:final_calibration}.
+We obtain the following result, presented later in figure \ref{fig:final_calibration}.
 
 %----------------------------------------------------------------%
-\section{Analog to Digital Converter}
+\section{Analogue to Digital Converter}
 \subsection{Theory of operation}
 \paragraph{}
-Now that the signal is amplified, we can convert it into a digital signal via an Analog to Digital Converter (ADC).
+Now that the signal is amplified, we can convert it into a digital signal via an Analogue to Digital Converter (ADC).
 The ADC is a $\Delta$$\Sigma$-ADC which means that the voltage value is converted into a linear amount of pulses during a period P. 
-The higher the voltage the more pulses it outputs.
+The higher the voltage, the more pulses it outputs.\cite{Wikipedia-2022}
 \paragraph{}
 As seen in the schematic below, if we consider the signal to be constant, the integrator transforms it into a linear function.
 Once that function reaches a threshold, a pulse is emitted, then each pulse is added to the output signal and by counting the amount of pulse (one pulse is equivalent to one quantum of voltage) it is possible to find the voltage.\\
@@ -192,15 +192,15 @@ We can have $2^{16}$ values from 0 to 2.048 V so our quantum is 31.2 $\mu$V.
 \end{figure}
 The ADC uses the $I^2C$ protocol to convey information to the mother board. 
 The $I^2C$ protocol revolves around two wires that connects one master (the mother board here) and slaves (the ADC). 
-One transfer data while the clock signal is in the other.
+One transfer data while other is a clock signal.
 Each slave has an address that the master uses to call it whenever it needs it.
 Each bit of data bus is given by a voltage, if there is 0V it is considered to be 0 and if there is a voltage it is a 1.
 The signal created is now a logical signal that can be translated by the master.
-The signal is composed of a start bit then the address of the slave in binary then the slave respond via a bit called ACK.
+The signal is composed of a start bit then the address of the slave in binary, then the slave response via a bit called ACK.
 The clock signal is used to read the data sent.
-It is then possible to have more than one slave with only two wires (We will not use this feature here).
-In order to have these two different voltages, we use two resistor connected to Vcc and the wires.
-Each wire can be connected to the ground so that the voltage can be 0V (bit 0) or not 0V (bit 1), the pull up resistor prevent short-circuiting and fix the bit to 1 when no one send data through the wires.
+It is then possible to have more than one slave with only two wires.
+In order to have these two different voltages, we use two resistors connected to Vcc and the wires.
+Each wire can be connected to the ground so that the voltage can be 0V (bit 0) or not 0V (bit 1), the pull-up resistor prevent short-circuiting and fix the bit to 1 when no one send data through the wires.\cite{nandland-2019}
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\textwidth]{figures/CAN.png}
@@ -213,7 +213,7 @@ Each wire can be connected to the ground so that the voltage can be 0V (bit 0) o
 A lab is isolated from a lot of external noise. In order to reinforce the noise reduction capability of our weighting scale, we must add some noise sources to see and reduce the effects. We will be focusing on two noise sources : a vibration generator and an electromagnetic noise generator.
 \subsection{Mechanical vibrations}
 \paragraph{}
-A small electric motor with a mass is added near the sensor. A non-symmetrical mass is placed on the rotor in order to create a distance between the centre of rotation and the gravity centre of the mass. When rotating, this device produces vibrations. Using the stroboscopic effect of our smartphone camera (at 60 frames per second) we set the motor speed at 60Hz.
+A small electric motor with a mass is added near the sensor. A non-symmetrical mass is placed on the rotor in order to create a distance between the centre of rotation and the gravity centre of the mass. When rotating, this device produces vibrations. Using the stroboscopic effect of our smartphone camera (at 60 frames per second) we set the motor speed at $\simeq 60Hz$.
 \paragraph{}
 The periodic nature of the synthetic noise is easily quantified using Fast Fourrier Transform algorithm on a long enough signal sample (1s in our case).
 The results are the following :
@@ -234,7 +234,10 @@ The results are the following :
 \caption{}
 \label{fig:nofilterFFT}
 \end{figure}
-Figure \ref{fig:nofilterFFT} shows an evident spectral contribution of the vibration device we added. In addition, we observed the standard deviation of a weigh measurement. We acquired more than 30 values in each cases for determination of an experimental standard variation using the SD formula of our data processing software : $s = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (x_i - \overline{x})^2}$. \\
+Figure \ref{fig:nofilterFFT} shows an evident spectral contribution of the vibration device we added. In addition, we observed the standard deviation of a weigh measurement. We acquired more than 30 values in each cases for determination of an experimental standard variation using the SD formula of our data processing software 
+\begin{equation}
+    s = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (x_i - \overline{x})^2}
+\end{equation}
 \begin{center}
 \begin{tabular}{|c|c|}
     \hline
@@ -247,7 +250,7 @@ Figure \ref{fig:nofilterFFT} shows an evident spectral contribution of the vibra
 \paragraph{}
 Since the useful part of the signal is only in the DC component. A Low-Pass filter should eliminate the disturbance while keeping the information in the signal.
 \paragraph{}
-In accordance with the available components, an RC filter ($1^{st}$ order) with a cutoff frequency of $0.8Hz$ is added to the circuit. Same measurements are made with after the filter is soldered on the board. Results are the following : 
+In accordance with the available components, an RC filter ($1^{st}$ order) with a cut-off frequency of $0.8Hz$ is added to the circuit. Same measurements are made with after the filter is soldered on the board. Results are the following : 
 \begin{figure}[H]
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -259,13 +262,13 @@ In accordance with the available components, an RC filter ($1^{st}$ order) with 
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/motorfilter.pdf}
-  \caption{FFT of the recovered signal before digitalisation\\ with the motor at 60 rounds per second}
+  \caption{FFT of the recovered signal before digitalization\\ with the motor at 60 rounds per second}
   \label{fig:motornofilter2}
 \end{subfigure}
 \caption{With the RC Low-Pass filter}
 \label{fig:filterFFT}
 \end{figure}
-Figure \ref{fig:filterFFT} shows the absence of AC component noise in our signal. Howerver, with the filter the stabilisation of the value takes more time. We must wait $3\tau$ to get a stable value. On the other hand, the displayed value seemed more stable. The same standard deviation measurement was made and the results showed a reduced variance of both values.
+Figure \ref{fig:filterFFT} shows the absence of AC component noise in our signal. However, with the filter the stabilization of the value takes more time. We must wait $3\tau$ (3-4 seconds) to get a stable value. On the other hand, the displayed value seemed more stable. The same standard deviation measurement was made and showed a reduced variance of both values.
 \begin{center}
 \begin{tabular}{|c|c|}
     \hline
@@ -277,7 +280,7 @@ Figure \ref{fig:filterFFT} shows the absence of AC component noise in our signal
 \end{center}
 The Motor contribution to the variance of the measurement system is completely wiped thanks to the low pass filter.
 \subsection{Electromagnetic noise}
-Electric motors are made with carbon brushes to make an electrical contact between the static wires and the moving parts. Because the contact is not always perfect, some sparks may occur randomly in the enclosure of the motor. Sparks can be assimilated as electromagnetic Diracs of high intensity. Using a large enough time-span, we can observe the sparks being transmitted by electromagnetic waves to the copper of the printed circuit board. The time span must not be too wide because the probability of the oscilloscope skipping a spark between two points increases with the sampling frequency. Figure \ref{fig:sparks} show some sparks acquired on the oscilloscope.
+Electric motors are made with carbon brushes to make an electrical contact between the static wires and the moving parts. Because the contact is not always perfect, some sparks may occur randomly in the enclosure of the motor. Sparks can be assimilated as electromagnetic Diracs of high intensity. Using a large enough time-span, we can observe the sparks being transmitted by electromagnetic waves to the copper of the printed circuit board. The time span must not be too wide because the probability of the oscilloscope skipping a spark between two points increases when the sampling frequency decreases. Figure \ref{fig:sparks} show some sparks acquired on the oscilloscope.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/sparks.pdf}
@@ -291,7 +294,7 @@ To reduce the sparks effect, a proof-of-concept faraday cage was made using stee
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/faraday.jpg}
-  \caption{Picture of the faraday cage setup arround the printed circuit board}
+  \caption{Picture of the faraday cage setup around the printed circuit board}
   \label{fig:faradaypic}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
@@ -326,14 +329,12 @@ The thermal noise or Johnson–Nyquist noise affects only resistive components \
     \item $T$ Temperature in Kelvin
 \end{itemize}
 
-%INSERT BuDGET ERROR HERE
-The differential amplifier can be modelled this way to take into account the different imperfections of the amplifier.
+As shown in \cite{Bucci-2020} the differential amplifier can be modelled this way to take into account the different imperfections of the amplifier.
 The values can be found in the amplifier's datasheet.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/error_budget.pdf}
     \label{fig:error_budget}
-    % pour info J'ai crop ta figure il y avait des marges trop grosses
     \caption{amplifier error schematic}
 \end{figure}
 \begin{itemize}
@@ -364,7 +365,7 @@ We obtain this value:
 \end{equation}
 The thermal noise generated by the resistors is negligible with respect to the amplifier noise.
 
-We can describe the error in terms of affected quantum. In our case, the 16 bit resolution of the conversion devices allows us to neglect the quantification error with respect to the electrical noise. We can therefore calculate the amount of noise in quantum units, and we will determine the Signal to noise ratio between the number of affected quantum and $2^{16}$ bits. In our case, the error is affecting 19 digits. We can round up to 20 digits because of the quantification error that is in the worst case 1 quantum. I term of mass, we can say that this device is able to detect a variation of 0.32 grams.
+We can describe the error in terms of affected quantum. In our case, the 16 bit resolution of the conversion devices allows us to neglect the quantification error with respect to the electrical noise. We can therefore calculate the amount of noise in quantum units, and we will determine the Signal to noise ratio between the number of affected quantum and $2^{16}$ bits. In our case, the error is affecting 19 digits. We can round up to 20 digits because of the quantification error that is in the worst case 1 quantum. In term of mass, we can say that this device is able to detect a variation of 0.32 grams.
 %----------------------------------------------------------------%
 \section{Conclusion}
 \subsection{Final calibration of the weighting scale}
@@ -377,6 +378,13 @@ Finally, we can produce a calibration curve for our device. Strain gauges are ve
     \label{fig:final_calibration}
 \end{figure}
 The equation linking the mass to the amplified voltage is : $Voltage = 0.00198.mass+0.02298$, with Voltage in Volts and mass in grams.
+\paragraph{Lab devices used}
+\begin{itemize}
+    \item Multimeter : Fluke 87V TRMS Industrial Multimeter
+    \item Oscilloscope : Textronic TBS 1000
+    \item Power Supply :  ELC AL991S
+
+\end{itemize}
 \newpage
 %----------------------------------------------------------------%
 \section{Bibliography}
@@ -397,18 +405,20 @@ This project is a good manner to evaluate our skills. The two main skills as sta
 \paragraph{} 
 During this 24 hours project, we had to determine various values for the different building blocks of the printed circuit board. Thanks to the layout of the board, I found it easy to separate the main functions of the circuit. The alimentation, the amplifier, the filter and the Analogue to Digital conversion. Each of the blocks were very basic. The filter for example was a $1^{st}$ order low-pass made with only two components. The ADC was also very simple to use thanks to the $I^2C$ protocol. The study of the overall circuit was made on separate blocks on a first time and on a second time on the whole system. The main metrologic characteristics such as sensitivity or Limit Of Detection (LOD) are determined. The calibration curve shows a good fit without non-linearities. 
 \paragraph{}
-In addition, every calibration graph meets the specification, such as the weight range (up to 1kg) and limit of detection.
+In addition, every calibration graph meets the specification, such as the weight range (up to 1 kg) and limit of detection.
 \subsubsection{Cooperate in a team or in a project mode}
-The project was a good occasion to work on some soft-skills. Working in duo was easy with my teamate. Each session we had a good workload management. We had tree type of tasks.
+The project was a good occasion to work on some soft-skills. Working in duo was easy with my teammate. Each session we had a good workload management. We had tree type of tasks.
 \begin{itemize}
     \item Tasks to be done before the session starts. It typically was some calculus or datasheet reading. This could be done at home to save some time for manipulations on the board.
-    \item Tasks to be done during the session. It was a list of measurements, soldering, things to ask the teacher during the sessions. Usually we were able to do just what we wanted but nothing more.
+    \item Tasks to be done during the session. It was a list of measurements, soldering, things to ask the teacher during the sessions. Usually we were able to do just what we wanted, but nothing more.
     \item Tasks to be done after the lab session. It was usually some data processing and report writing.
 \end{itemize}
 \paragraph{}
 Since Pierre-Louis was better at calculus than myself, he usually took the more mathematical tasks. On the other hand, I produced all the graphs and took care of data processing and logging all the manipulation we did.
 \paragraph{}
 At the end of this project, I am happy with the result we achieved. In my opinion, we could not do much more in the allowed time, but a lot of work is still to be done in order to go from lab bench to a real product.
+
+
 \newpage
 \subsection{Pierre-Louis Gil}
 \paragraph{}
